@@ -30,7 +30,6 @@ setup(
     license='GNU',
     packages=['mailer'],
     install_requires=package_requirements,
-    test_suite='nose.collector',
     tests_require=tests_requirements,
     zip_safe=False,
     include_package_data=True,
