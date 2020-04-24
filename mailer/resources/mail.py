@@ -13,7 +13,7 @@ class MailResource(Resource):
     @marshal_with(Mail.marshal_fields)
     def get(self, mail_id):
         try:
-            mail = Mail.query.filter(id==mail_id).one()
+            mail = Mail.query.filter(Mail.id == mail_id).one()
         except NoResultFound as e:
             abort(404, message='Mail not found')
 

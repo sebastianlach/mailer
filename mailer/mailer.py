@@ -12,7 +12,7 @@ blueprint = Blueprint('api', __name__, url_prefix='/api')
 # configure api
 api = Api(blueprint)
 api.add_resource(MailsResource, '/mail')
-api.add_resource(MailResource, '/mail/<mail_id>')
+api.add_resource(MailResource, '/mail/<int:mail_id>')
 
 
 def create_app():
