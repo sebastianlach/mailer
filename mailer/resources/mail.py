@@ -2,6 +2,7 @@ from datetime import datetime
 
 from flask import request
 from flask_restful import Resource, abort, marshal_with
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from ..models.mail import Mail, Recipient
@@ -55,10 +56,14 @@ class RecipientsResource(Resource):
 
         data = request.get_json()
 
-        recipient = Recipient(
-            mail_id=mail.id,
-            address=data['address'],
-        )
-        db.session.add(recipient)
-        db.session.commit()
+        try:
+            recipient = Recipient(
+                mail_id=mail.id,
+                address=data['address'],
+            )
+            db.session.add(recipient)
+            db.session.commit()
+        except IntegrityError as e:
+            abort(409, message='Recipient already exists')
+
         return recipient

@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from flask_restful import fields
+from sqlalchemy import UniqueConstraint
 
 from .database import db
 
@@ -19,6 +20,10 @@ class Mail(db.Model):
 
 
 class Recipient(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint('mail_id', 'address', name='unique_address'),
+    )
+
     id = db.Column(db.Integer, primary_key=True)
     mail_id = db.Column(db.Integer, db.ForeignKey('mail.id'), nullable=False)
     mail = db.relationship('Mail', backref=db.backref('recipients', lazy=True))
@@ -29,3 +34,6 @@ class Recipient(db.Model):
         mail_id=fields.Integer,
         address=fields.String,
     )
+
+    def __str__(self):
+        return "{}".format(self.address)
