@@ -2,8 +2,9 @@ from datetime import datetime
 from flask import request
 from flask_restful import Resource, abort
 from sqlalchemy.orm.exc import NoResultFound
-from models.mail import Mail
-from models.database import db
+
+from ..models.mail import Mail
+from ..models.database import db
 
 
 class MailResource(Resource):

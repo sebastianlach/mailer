@@ -2,8 +2,8 @@
 from flask import Flask, Blueprint
 from flask_restful import Api
 
-from models.database import db
-from resources.mail import MailResource, MailsResource
+from .models.database import db
+from .resources.mail import MailResource, MailsResource
 
 
 # configure blueprint
@@ -17,7 +17,7 @@ api.add_resource(MailResource, '/mail/<mail_id>')
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_pyfile('app.cfg')
+    app.config.from_envvar('MAILER_SETTINGS')
 
     db.init_app(app)
     with app.app_context():
@@ -26,8 +26,3 @@ def create_app():
 
     app.register_blueprint(blueprint)
     return app
-
-
-if __name__ == '__main__':
-    app = create_app()
-    app.run(debug=True)
