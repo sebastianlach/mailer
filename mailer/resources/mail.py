@@ -4,7 +4,7 @@ from flask import request
 from flask_restful import Resource, abort, marshal_with
 from sqlalchemy.orm.exc import NoResultFound
 
-from ..models.mail import Mail
+from ..models.mail import Mail, Recipient
 from ..models.database import db
 
 
@@ -39,3 +39,26 @@ class MailsResource(Resource):
         db.session.add(mail)
         db.session.commit()
         return mail
+
+
+class RecipientsResource(Resource):
+
+    @marshal_with(Recipient.marshal_fields)
+    def post(self, mail_id):
+        try:
+            mail = Mail.query.filter(Mail.id == mail_id).one()
+        except NoResultFound as e:
+            abort(404, message='Mail not found')
+
+        if not request.is_json:
+            abort(400, message='Provide valid JSON')
+
+        data = request.get_json()
+
+        recipient = Recipient(
+            mail_id=mail.id,
+            address=data['address'],
+        )
+        db.session.add(recipient)
+        db.session.commit()
+        return recipient

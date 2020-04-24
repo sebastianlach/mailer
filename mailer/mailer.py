@@ -4,6 +4,7 @@ from flask_restful import Api
 
 from .models.database import db
 from .resources.mail import MailResource, MailsResource
+from .resources.mail import RecipientsResource
 
 
 # configure blueprint
@@ -13,6 +14,7 @@ blueprint = Blueprint('api', __name__, url_prefix='/api')
 api = Api(blueprint)
 api.add_resource(MailsResource, '/mail')
 api.add_resource(MailResource, '/mail/<int:mail_id>')
+api.add_resource(RecipientsResource, '/mail/<int:mail_id>/recipient')
 
 
 def create_app():
