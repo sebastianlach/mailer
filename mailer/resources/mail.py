@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from colander import Invalid
 from flask import request
 from flask_restful import Resource, abort, marshal_with
 from sqlalchemy.exc import IntegrityError
@@ -7,6 +8,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from ..models.mail import Mail, Recipient
 from ..models.database import db
+from ..schemas.mail import MailSchema
 
 
 class MailResource(Resource):
@@ -32,7 +34,12 @@ class MailsResource(Resource):
         if not request.is_json:
             abort(400, message='Provide valid JSON')
 
-        data = request.get_json()
+        document = request.get_json()
+        schema = MailSchema()
+        try:
+            data = schema.deserialize(document)
+        except Invalid as e:
+            abort(400, errors=e.asdict())
 
         mail = Mail(
             content=data['content'],
