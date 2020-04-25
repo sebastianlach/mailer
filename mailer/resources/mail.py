@@ -8,7 +8,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from ..models.mail import Mail, Recipient
 from ..models.database import db
-from ..schemas.mail import MailSchema
+from ..schemas.mail import MailSchema, RecipientSchema
 
 
 class MailResource(Resource):
@@ -61,12 +61,18 @@ class RecipientsResource(Resource):
         if not request.is_json:
             abort(400, message='Provide valid JSON')
 
-        data = request.get_json()
+        document = request.get_json()
+        schema = RecipientSchema()
+        try:
+            data = schema.deserialize(document)
+        except Invalid as e:
+            abort(400, errors=e.asdict())
 
         try:
             recipient = Recipient(
                 mail_id=mail.id,
                 address=data['address'],
+                name=data['name'],
             )
             db.session.add(recipient)
             db.session.commit()

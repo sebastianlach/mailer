@@ -28,12 +28,17 @@ class Recipient(db.Model):
     mail_id = db.Column(db.Integer, db.ForeignKey('mail.id'), nullable=False)
     mail = db.relationship('Mail', backref=db.backref('recipients', lazy=True))
     address = db.Column(db.String(255), nullable=False)
+    name = db.Column(db.String(255), nullable=True)
 
     marshal_fields = dict(
         id=fields.Integer,
         mail_id=fields.Integer,
         address=fields.String,
+        name=fields.String,
     )
 
     def __str__(self):
-        return "{}".format(self.address)
+        return "{} <{}>".format(
+            self.name if self.name else 'Unknown',
+            self.address,
+        )
