@@ -120,6 +120,15 @@ def test_cannot_define_recipient_for_non_existing_mail(client):
     assert rv.status_code == 404
 
 
+def test_cannot_define_recipient_without_data(client):
+    rv = client.post('/api/mail', json={
+        'content': 'lorem ipsum',
+    })
+
+    rv = client.post('/api/mail/1/recipient')
+    assert rv.status_code == 400
+
+
 def test_can_define_the_sender(client):
     rv = client.post('/api/mail', json={
         'content': 'lorem ipsum',
