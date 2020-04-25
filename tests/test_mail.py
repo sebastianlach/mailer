@@ -146,3 +146,12 @@ def test_can_define_the_sender(client):
     data = json.loads(rv.data)
     assert data['name'] == 'Example'
     assert data['address'] == 'example@example.com'
+
+
+def test_cannot_update_mail_without_data(client):
+    rv = client.post('/api/mail', json={
+        'content': 'lorem ipsum',
+    })
+
+    rv = client.post('/api/mail/1')
+    assert rv.status_code == 400
