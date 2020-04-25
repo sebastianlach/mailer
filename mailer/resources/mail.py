@@ -43,6 +43,8 @@ class MailsResource(Resource):
 
         mail = Mail(
             content=data['content'],
+            address=data.get('address', None),
+            name=data.get('name', None),
         )
         db.session.add(mail)
         db.session.commit()
@@ -72,7 +74,7 @@ class RecipientsResource(Resource):
             recipient = Recipient(
                 mail_id=mail.id,
                 address=data['address'],
-                name=data['name'],
+                name=data.get('name', None),
             )
             db.session.add(recipient)
             db.session.commit()

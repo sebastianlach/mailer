@@ -17,6 +17,18 @@ def test_can_create_a_new_mail(client):
     assert data['content'] == 'lorem ipsum'
 
 
+def test_can_create_a_new_mail_with_sender(client):
+    rv = client.post('/api/mail', json={
+        'content': 'lorem ipsum',
+        'address': 'example@example.com',
+        'name': 'Example',
+    })
+    data = json.loads(rv.data)
+    assert data['content'] == 'lorem ipsum'
+    assert data['address'] == 'example@example.com'
+    assert data['name'] == 'Example'
+
+
 def test_can_see_all_mail(client):
     rv = client.post('/api/mail', json={
         'content': 'lorem ipsum',
@@ -24,6 +36,7 @@ def test_can_see_all_mail(client):
 
     rv = client.get('/api/mail')
     data = json.loads(rv.data)
+    assert len(data) == 1
     assert data[0]['content'] == 'lorem ipsum'
 
 
