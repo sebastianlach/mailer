@@ -29,6 +29,11 @@ def test_can_create_a_new_mail_with_sender(client):
     assert data['name'] == 'Example'
 
 
+def test_cannot_create_a_new_mail_without_data(client):
+    rv = client.post('/api/mail')
+    assert rv.status_code == 400
+
+
 def test_can_see_all_mail(client):
     rv = client.post('/api/mail', json={
         'content': 'lorem ipsum',
