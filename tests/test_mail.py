@@ -52,3 +52,26 @@ def test_can_define_one_recipient(client):
     assert 'name' in data
     assert data['mail_id'] == 1
     assert data['address'] == 'example@example.com'
+
+
+def test_can_define_many_recipients(client):
+    rv = client.post('/api/mail', json={
+        'content': 'lorem ipsum',
+    })
+
+    rv = client.post('/api/mail/1/recipient', json={
+        'address': 'example1@example.com',
+    })
+    rv = client.post('/api/mail/1/recipient', json={
+        'address': 'example2@example.com',
+    })
+    rv = client.post('/api/mail/1/recipient', json={
+        'address': 'example3@example.com',
+    })
+
+    rv = client.get('/api/mail/1')
+    data = json.loads(rv.data)
+    assert len(data['recipients']) == 3
+    assert 'example1@example.com' in data['recipients']
+    assert 'example2@example.com' in data['recipients']
+    assert 'example3@example.com' in data['recipients']

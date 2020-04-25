@@ -38,7 +38,4 @@ class Recipient(db.Model):
     )
 
     def __str__(self):
-        return "{} <{}>".format(
-            self.name if self.name else 'Unknown',
-            self.address,
-        )
+        return "{}".format(self.address)
