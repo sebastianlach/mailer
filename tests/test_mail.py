@@ -71,6 +71,16 @@ def test_cannot_see_details_of_non_existing_mail(client):
     assert rv.status_code == 404
 
 
+def test_can_check_the_status_of_the_email(client):
+    rv = client.post('/api/mail', json={
+        'content': 'lorem ipsum',
+    })
+
+    rv = client.get('/api/mail/1')
+    data = json.loads(rv.data)
+    assert data['state'] == 'MailStates.PENDING'
+
+
 def test_cannot_update_non_existing_mail(client):
     rv = client.post('/api/mail/42')
     assert rv.status_code == 404

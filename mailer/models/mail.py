@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 
 from flask_restful import fields
 from sqlalchemy import UniqueConstraint
@@ -6,9 +7,15 @@ from sqlalchemy import UniqueConstraint
 from .database import db
 
 
+class MailStates(Enum):
+    PENDING = 'pending'
+    SENT = 'sent'
+
+
 class Mail(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
+    state = db.Column(db.Enum(MailStates), default=MailStates.PENDING)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     address = db.Column(db.String(255), nullable=True)
     name = db.Column(db.String(255), nullable=True)
@@ -16,6 +23,7 @@ class Mail(db.Model):
     marshal_fields = dict(
         id=fields.Integer,
         content=fields.String,
+        state=fields.String,
         address=fields.String,
         name=fields.String,
         created_at=fields.DateTime,
