@@ -8,7 +8,11 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from ..models.mail import Mail, Recipient
 from ..models.database import db
-from ..schemas.mail import MailSchema, RecipientSchema
+from ..schemas.mail import (
+    MailCreateSchema,
+    MailUpdateSchema,
+    RecipientCreateSchema,
+)
 
 
 class MailResource(Resource):
@@ -20,6 +24,30 @@ class MailResource(Resource):
         except NoResultFound as e:
             abort(404, message='Mail not found')
 
+        return mail
+
+    @marshal_with(Mail.marshal_fields)
+    def post(self, mail_id):
+        try:
+            mail = Mail.query.filter(Mail.id == mail_id).one()
+        except NoResultFound as e:
+            abort(404, message='Mail not found')
+
+        if not request.is_json:
+            abort(400, message='Provide valid JSON')
+
+        document = request.get_json()
+        schema = MailUpdateSchema()
+        try:
+            data = schema.deserialize(document)
+        except Invalid as e:
+            abort(400, errors=e.asdict())
+
+        mail.content = data.get('content', mail.content)
+        mail.address = data.get('address', mail.address)
+        mail.name = data.get('name', mail.name)
+        db.session.add(mail)
+        db.session.commit()
         return mail
 
 
@@ -35,7 +63,7 @@ class MailsResource(Resource):
             abort(400, message='Provide valid JSON')
 
         document = request.get_json()
-        schema = MailSchema()
+        schema = MailCreateSchema()
         try:
             data = schema.deserialize(document)
         except Invalid as e:
@@ -64,7 +92,7 @@ class RecipientsResource(Resource):
             abort(400, message='Provide valid JSON')
 
         document = request.get_json()
-        schema = RecipientSchema()
+        schema = RecipientCreateSchema()
         try:
             data = schema.deserialize(document)
         except Invalid as e:
