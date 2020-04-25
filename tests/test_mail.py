@@ -127,6 +127,24 @@ def test_cannot_define_recipient_with_wrong_address(client):
     assert 'errors' in data
 
 
+def test_cannot_define_existing_recipient(client):
+    rv = client.post('/api/mail', json={
+        'content': 'lorem ipsum',
+    })
+
+    rv = client.post('/api/mail/1/recipient', json={
+        'address': 'example@example.com',
+    })
+    data = json.loads(rv.data)
+    assert data['mail_id'] == 1
+    assert data['address'] == 'example@example.com'
+
+    rv = client.post('/api/mail/1/recipient', json={
+        'address': 'example@example.com',
+    })
+    assert rv.status_code == 409
+
+
 def test_cannot_define_recipient_for_non_existing_mail(client):
     rv = client.post('/api/mail/42/recipient', json={
         'address': 'example@example.com',
