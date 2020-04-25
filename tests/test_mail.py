@@ -34,6 +34,15 @@ def test_cannot_create_a_new_mail_without_data(client):
     assert rv.status_code == 400
 
 
+def test_cannot_create_a_new_mail_without_content(client):
+    rv = client.post('/api/mail', json={
+        'address': 'example@example.com',
+    })
+    assert rv.status_code == 400
+    data = json.loads(rv.data)
+    assert 'errors' in data
+
+
 def test_can_see_all_mail(client):
     rv = client.post('/api/mail', json={
         'content': 'lorem ipsum',
