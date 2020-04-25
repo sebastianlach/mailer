@@ -52,6 +52,16 @@ def test_can_see_details_of_the_mail(client):
     assert data['content'] == 'lorem ipsum'
 
 
+def test_cannot_see_details_of_non_existing_mail(client):
+    rv = client.get('/api/mail/42')
+    assert rv.status_code == 404
+
+
+def test_cannot_update_non_existing_mail(client):
+    rv = client.post('/api/mail/42')
+    assert rv.status_code == 404
+
+
 def test_can_define_one_recipient(client):
     rv = client.post('/api/mail', json={
         'content': 'lorem ipsum',
