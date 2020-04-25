@@ -75,3 +75,16 @@ def test_can_define_many_recipients(client):
     assert 'example1@example.com' in data['recipients']
     assert 'example2@example.com' in data['recipients']
     assert 'example3@example.com' in data['recipients']
+
+
+def test_cannot_define_recipient_with_wrong_address(client):
+    rv = client.post('/api/mail', json={
+        'content': 'lorem ipsum',
+    })
+
+    rv = client.post('/api/mail/1/recipient', json={
+        'address': '@invalid.com',
+    })
+    assert rv.status_code == 400
+    data = json.loads(rv.data)
+    assert 'errors' in data
