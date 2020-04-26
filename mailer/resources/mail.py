@@ -2,17 +2,19 @@ from datetime import datetime
 
 from colander import Invalid
 from flask import request
+from flask_mail import Message
 from flask_restful import Resource, abort, marshal_with
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
-from ..models.mail import Mail, Recipient
+from ..models.mail import Mail, MailStates, Recipient
 from ..models.database import db
 from ..schemas.mail import (
     MailCreateSchema,
     MailUpdateSchema,
     RecipientCreateSchema,
 )
+from ..services.mail import mail
 
 
 class MailResource(Resource):
@@ -110,3 +112,31 @@ class RecipientsResource(Resource):
             abort(409, message='Recipient already exists')
 
         return recipient
+
+
+class SendMailsResource(Resource):
+
+    @marshal_with(Mail.marshal_fields)
+    def post(self):
+        mails = Mail.query.filter(Mail.state == MailStates.PENDING).all()
+        for entity in mails:
+            if entity.recipients:
+                message = Message(
+                    subject=None,
+                    body=entity.content,
+                    sender=(
+                        (entity.name, entity.address) if entity.name else\
+                        entity.address
+                    ),
+                    recipients=[
+                        (item.name, item.address) if item.name else\
+                        item.address
+                        for item in entity.recipients
+                    ]
+                )
+                mail.send(message)
+                entity.state = MailStates.SENT
+                db.session.add(entity)
+
+        db.session.commit()
+        return mails
