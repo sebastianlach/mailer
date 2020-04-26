@@ -20,9 +20,10 @@ api.add_resource(MailResource, '/mails/<int:mail_id>')
 api.add_resource(RecipientsResource, '/mails/<int:mail_id>/recipients')
 
 
-def create_app():
+def create_app(settings='settings.py', config=dict()):
     app = Flask(__name__)
-    app.config.from_envvar('MAILER_SETTINGS')
+    app.config.from_pyfile(settings)
+    app.config.update(config)
 
     db.init_app(app)
     with app.app_context():
