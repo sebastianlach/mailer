@@ -120,7 +120,7 @@ class SendMailsResource(Resource):
     def post(self):
         mails = Mail.query.filter(Mail.state == MailStates.PENDING).all()
         for entity in mails:
-            if entity.recipients:
+            if entity.address and entity.recipients:
                 message = Message(
                     subject=None,
                     body=entity.content,
