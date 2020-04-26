@@ -1,7 +1,9 @@
 from datetime import datetime
+from socket import gaierror
+from smtplib import SMTPException
 
 from colander import Invalid
-from flask import request
+from flask import request, current_app
 from flask_mail import Message
 from flask_restful import Resource, abort, marshal_with
 from sqlalchemy.exc import IntegrityError
@@ -136,9 +138,17 @@ class SendMailsResource(Resource):
                         for item in entity.recipients
                     ]
                 )
-                mail.send(message)
-                entity.state = MailStates.SENT
-                db.session.add(entity)
+
+                try:
+                    mail.send(message)
+                    entity.state = MailStates.SENT
+                    db.session.add(entity)
+                except SMTPException as e:
+                   current_app.logger.error(e)
+                except gaierror as e:
+                   current_app.logger.error(e)
+                except OSError as e:
+                   current_app.logger.error(e)
 
         db.session.commit()
         return mails
