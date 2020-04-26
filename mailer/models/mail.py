@@ -14,6 +14,7 @@ class MailStates(Enum):
 
 class Mail(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    subject = db.Column(db.String(255), nullable=True)
     content = db.Column(db.Text, nullable=False)
     state = db.Column(db.Enum(MailStates), default=MailStates.PENDING)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

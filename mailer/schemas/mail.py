@@ -5,6 +5,7 @@ from colander import drop
 
 
 class MailCreateSchema(MappingSchema):
+    subject = SchemaNode(String(), validator=Length(0, 255), missing=drop)
     content = SchemaNode(String())
     name = SchemaNode(String(), validator=Length(0, 255), missing=drop)
     address = SchemaNode(
@@ -15,6 +16,7 @@ class MailCreateSchema(MappingSchema):
 
 
 class MailUpdateSchema(MappingSchema):
+    subject = SchemaNode(String(), validator=Length(0, 255), missing=drop)
     content = SchemaNode(String(), missing=drop)
     name = SchemaNode(String(), validator=Length(0, 255), missing=drop)
     address = SchemaNode(

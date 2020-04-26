@@ -45,6 +45,7 @@ class MailResource(Resource):
         except Invalid as e:
             abort(400, errors=e.asdict())
 
+        mail.subject = data.get('subject', mail.subject)
         mail.content = data.get('content', mail.content)
         mail.address = data.get('address', mail.address)
         mail.name = data.get('name', mail.name)
@@ -72,6 +73,7 @@ class MailsResource(Resource):
             abort(400, errors=e.asdict())
 
         mail = Mail(
+            subject=data.get('subject', None),
             content=data['content'],
             address=data.get('address', None),
             name=data.get('name', None),
@@ -122,7 +124,7 @@ class SendMailsResource(Resource):
         for entity in mails:
             if entity.address and entity.recipients:
                 message = Message(
-                    subject=None,
+                    subject=entity.subject,
                     body=entity.content,
                     sender=(
                         (entity.name, entity.address) if entity.name else\

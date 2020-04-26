@@ -211,6 +211,7 @@ def test_cannot_update_mail_without_data(client):
 
 def test_can_send_all_pending_email(client):
     rv = client.post('/api/mails', json={
+        'subject': 'lorem ipsum',
         'content': 'lorem ipsum',
         'address': 'sender@example.com',
     })
@@ -224,6 +225,7 @@ def test_can_send_all_pending_email(client):
         rv = client.post('/api/mails/send')
         assert len(outbox) == 1
         assert outbox[0].sender == 'sender@example.com'
+        assert outbox[0].subject == 'lorem ipsum'
         assert outbox[0].body == 'lorem ipsum'
 
     data = json.loads(rv.data)
