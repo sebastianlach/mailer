@@ -1,10 +1,17 @@
 # mailer
 
 ## Setup application
-
-1. ``virtulenv venv``
-2. ``source venv/bin/active``
-3. ``pip install -r requirements.txt``
-4. ``python app.py``
+```bash
+virtulenv venv
+source venv/bin/active
+pip install -e .
+python -m mailer
+```
 
 You server should be started by now.
+
+## Testing
+```bash
+pip install -r tests/requirements.txt
+pytest
+```
